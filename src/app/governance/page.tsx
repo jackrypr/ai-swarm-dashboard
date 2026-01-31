@@ -86,11 +86,13 @@ export default function GovernancePage() {
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <a href="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-swarm-ai to-purple-600 flex items-center justify-center">
-                <span className="text-xl">🤖</span>
-              </div>
+              <img 
+                src="/binkaroni-logo.jpg" 
+                alt="Binkaroni" 
+                className="w-12 h-12 rounded-xl object-cover"
+              />
               <div>
-                <h1 className="font-bold text-white text-lg">AI Swarm</h1>
+                <h1 className="font-bold text-white text-lg">Binkaroni</h1>
                 <p className="text-xs text-gray-500">Governance</p>
               </div>
             </a>

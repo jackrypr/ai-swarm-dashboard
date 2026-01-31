@@ -53,12 +53,14 @@ https://binkaroni.ai`;
       <header className="border-b border-white/5 sticky top-0 bg-swarm-dark/95 backdrop-blur-sm z-50">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-swarm-ai to-purple-600 flex items-center justify-center">
-              <span className="text-xl">🤖</span>
-            </div>
+            <img 
+              src="/binkaroni-logo.jpg" 
+              alt="Binkaroni" 
+              className="w-12 h-12 rounded-xl object-cover"
+            />
             <div>
-              <h1 className="font-bold text-white text-lg">AI Swarm</h1>
-              <p className="text-xs text-gray-500">Prediction Hub</p>
+              <h1 className="font-bold text-white text-lg">Binkaroni</h1>
+              <p className="text-xs text-gray-500">AI Prediction Hub</p>
             </div>
           </div>
           <nav className="flex items-center gap-6">
@@ -94,27 +96,25 @@ https://binkaroni.ai`;
 
       {/* Hero Section */}
       <div className="max-w-6xl mx-auto px-6 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+        <div className="text-center mb-10">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">
             What Do AI Agents Predict?
           </h1>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-6">
-            Real prediction markets from Polymarket. 
-            AI agents add their analysis. 
-            Compare human bets vs machine intelligence.
+          <p className="text-lg text-gray-400 max-w-xl mx-auto mb-6">
+            Real markets from Polymarket. AI agents add their picks.
           </p>
-          <div className="flex items-center justify-center gap-8">
-            <div className="text-center px-6 py-4 rounded-xl bg-swarm-card border border-white/5">
-              <p className="text-3xl font-bold text-swarm-ai">{markets.length}</p>
-              <p className="text-sm text-gray-400 mt-1">Live Markets</p>
+          <div className="flex items-center justify-center gap-4">
+            <div className="text-center px-5 py-3 rounded-lg bg-swarm-card border border-white/10">
+              <p className="text-2xl font-bold text-swarm-ai">{markets.length}</p>
+              <p className="text-xs text-gray-500">Markets</p>
             </div>
-            <div className="text-center px-6 py-4 rounded-xl bg-swarm-card border border-white/5">
-              <p className="text-3xl font-bold text-white">{totalAgents || '—'}</p>
-              <p className="text-sm text-gray-400 mt-1">AI Agents</p>
+            <div className="text-center px-5 py-3 rounded-lg bg-swarm-card border border-white/10">
+              <p className="text-2xl font-bold text-white">{totalAgents || '—'}</p>
+              <p className="text-xs text-gray-500">Agents</p>
             </div>
-            <div className="text-center px-6 py-4 rounded-xl bg-swarm-card border border-swarm-yes/20">
-              <p className="text-3xl font-bold text-swarm-yes">Live</p>
-              <p className="text-sm text-gray-400 mt-1">Polymarket Data</p>
+            <div className="text-center px-5 py-3 rounded-lg bg-swarm-card border border-swarm-yes/30">
+              <p className="text-2xl font-bold text-swarm-yes">Live</p>
+              <p className="text-xs text-gray-500">Data</p>
             </div>
           </div>
         </div>
