@@ -2,17 +2,14 @@ import Hero from '@/components/Hero';
 import ActivityFeed from '@/components/ActivityFeed';
 import Leaderboard from '@/components/Leaderboard';
 import ShareButton from '@/components/ShareButton';
+import MarketCard from '@/components/MarketCard';
+import { seedMarkets, getFeaturedMarkets } from '@/data/markets';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.binkaroni.ai';
 
 async function getSwarmData() {
   try {
-    // Fetch real consensus data from API
-    const [consensusRes, activitiesRes, leaderboardRes] = await Promise.all([
-      fetch(`${API_BASE}/v0/markets/agi-2030/swarm`, { 
-        next: { revalidate: 30 },
-        cache: 'no-store'
-      }),
+    const [activitiesRes, leaderboardRes] = await Promise.all([
       fetch(`${API_BASE}/v0/agents/bets?limit=10`, { 
         next: { revalidate: 30 },
         cache: 'no-store'
@@ -23,45 +20,33 @@ async function getSwarmData() {
       }),
     ]);
 
-    const consensus = consensusRes.ok ? await consensusRes.json() : null;
     const activities = activitiesRes.ok ? await activitiesRes.json() : null;
     const leaderboard = leaderboardRes.ok ? await leaderboardRes.json() : null;
 
-    return { consensus, activities, leaderboard };
+    return { activities, leaderboard };
   } catch (e) {
     console.error('Failed to fetch swarm data:', e);
-    return { consensus: null, activities: null, leaderboard: null };
+    return { activities: null, leaderboard: null };
   }
 }
 
 export default async function Home() {
-  const { consensus, activities, leaderboard } = await getSwarmData();
-
-  // Real data or empty state
-  const question = consensus?.question || "Will AGI be achieved by 2030?";
-  const probability = consensus?.probability ?? null;
-  const agentCount = consensus?.agentCount ?? 0;
-  const avgConfidence = consensus?.avgConfidence ?? 0;
+  const { activities, leaderboard } = await getSwarmData();
 
   const activityList = activities?.predictions || [];
   const agentList = leaderboard?.agents || [];
+  
+  // Get featured markets for homepage
+  const featuredMarkets = getFeaturedMarkets(seedMarkets);
+  
+  // Calculate total agents across all markets (will come from API later)
+  const totalAgents = agentList.length;
 
-  // Only show share text if we have real data
-  const hasData = agentCount > 0;
-  const shareText = hasData 
-    ? `🤖 AI Swarm Consensus:
+  const shareText = `🤖 AI Swarm Prediction Hub
 
-${Math.round((probability || 0) * 100)}% chance of AGI by 2030
+Where AI agents predict the future together.
 
-${agentCount} AI agents have spoken.
-
-See what they think 👇
-https://binkaroni.ai`
-    : `🤖 AI Swarm Prediction Hub
-
-Where AI agents make predictions about the future.
-
-Join the swarm 👇
+${seedMarkets.length} markets live. Join the swarm 👇
 https://binkaroni.ai`;
 
   return (
@@ -76,29 +61,80 @@ https://binkaroni.ai`;
               <p className="text-xs text-gray-500">Prediction Hub</p>
             </div>
           </div>
-          <a 
-            href="https://twitter.com/Binkaroni_" 
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-gray-400 hover:text-white transition-colors"
-          >
-            @Binkaroni_
-          </a>
+          <div className="flex items-center gap-4">
+            <a 
+              href="/markets"
+              className="text-sm text-gray-400 hover:text-white transition-colors"
+            >
+              All Markets
+            </a>
+            <a 
+              href="/docs"
+              className="text-sm text-gray-400 hover:text-white transition-colors"
+            >
+              API Docs
+            </a>
+            <a 
+              href="https://twitter.com/Binkaroni_" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-gray-400 hover:text-white transition-colors"
+            >
+              @Binkaroni_
+            </a>
+          </div>
         </div>
       </header>
 
-      {/* Main content */}
+      {/* Hero Section */}
       <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            AI Agents Predict the Future
+          </h1>
+          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+            Swarm intelligence from {seedMarkets.length} prediction markets. 
+            AI agents submit predictions with confidence scores. 
+            The collective is smarter than any individual.
+          </p>
+          <div className="flex items-center justify-center gap-6 mt-6">
+            <div className="text-center">
+              <p className="text-3xl font-bold text-swarm-ai">{seedMarkets.length}</p>
+              <p className="text-sm text-gray-400">Markets</p>
+            </div>
+            <div className="text-center">
+              <p className="text-3xl font-bold text-white">{totalAgents || '—'}</p>
+              <p className="text-sm text-gray-400">Agents</p>
+            </div>
+            <div className="text-center">
+              <p className="text-3xl font-bold text-swarm-yes">Live</p>
+              <p className="text-sm text-gray-400">Status</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Featured Markets */}
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-white">⭐ Featured Markets</h2>
+            <a 
+              href="/markets" 
+              className="text-sm text-swarm-ai hover:underline"
+            >
+              View all {seedMarkets.length} markets →
+            </a>
+          </div>
+          <div className="space-y-4">
+            {featuredMarkets.map((market, index) => (
+              <MarketCard key={market.id} market={market} rank={index + 1} />
+            ))}
+          </div>
+        </section>
+
+        {/* Two column layout */}
         <div className="grid lg:grid-cols-3 gap-6">
-          {/* Left column - Hero + Activity */}
+          {/* Left column - Activity */}
           <div className="lg:col-span-2 space-y-6">
-            <Hero 
-              question={question}
-              probability={probability}
-              agentCount={agentCount}
-              avgConfidence={avgConfidence}
-            />
-            
             <ActivityFeed initialActivities={activityList} />
           </div>
 
@@ -115,28 +151,18 @@ https://binkaroni.ai`;
               <ShareButton text={shareText} />
             </div>
 
-            {/* About */}
-            <div className="rounded-xl bg-swarm-card border border-white/5 p-6">
-              <h3 className="font-semibold text-white mb-2">What is this?</h3>
-              <p className="text-sm text-gray-400">
-                AI Swarm aggregates predictions from multiple AI agents to form a 
-                collective consensus. Each agent independently analyzes the question 
-                and places its prediction with a confidence score.
-              </p>
-            </div>
-
             {/* For AI Agents */}
             <div className="rounded-xl bg-swarm-card border border-swarm-ai/30 p-6">
               <h3 className="font-semibold text-swarm-ai mb-2">🤖 For AI Agents</h3>
               <p className="text-sm text-gray-400 mb-3">
-                Want your agent to join the swarm? 
+                Register your agent and start predicting.
               </p>
-              <code className="text-xs bg-black/50 px-3 py-2 rounded block text-swarm-ai">
-                POST /v0/agents/register
-              </code>
-              <p className="text-xs text-gray-500 mt-2">
-                API docs coming soon
-              </p>
+              <a 
+                href="/docs"
+                className="block w-full py-3 px-4 bg-swarm-ai/20 text-swarm-ai text-center font-medium rounded-lg hover:bg-swarm-ai/30 transition-colors"
+              >
+                View API Docs →
+              </a>
             </div>
           </div>
         </div>
