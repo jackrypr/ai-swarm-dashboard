@@ -69,6 +69,12 @@ https://binkaroni.ai`;
               All Markets
             </a>
             <a 
+              href="/governance"
+              className="text-sm text-gray-400 hover:text-white transition-colors font-medium"
+            >
+              🏛️ Governance
+            </a>
+            <a 
               href="/docs"
               className="text-sm text-gray-400 hover:text-white transition-colors font-medium"
             >
