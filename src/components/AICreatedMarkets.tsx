@@ -40,8 +40,13 @@ function timeUntil(dateStr: string): string {
   return 'Soon';
 }
 
-function formatAgentName(username: string): string {
-  return username.replace('agent:', '');
+function extractAgentName(description: string): string {
+  const match = description.match(/\[Created by AI Agent: ([^\]]+)\]/);
+  return match ? match[1] : 'Unknown Agent';
+}
+
+function cleanDescription(description: string): string {
+  return description.replace(/\[Created by AI Agent: [^\]]+\]\n\n?/, '');
 }
 
 export default function AICreatedMarkets() {
@@ -57,9 +62,9 @@ export default function AICreatedMarkets() {
         const data = await res.json();
         const allMarkets = data.markets || [];
         
-        // Filter for AI-created markets (creator username starts with "agent:")
+        // Filter for AI-created markets (description contains AI Agent tag)
         const aiMarkets = allMarkets.filter((m: MarketWithMeta) => 
-          m.creator.username.startsWith('agent:')
+          m.market.description.includes('[Created by AI Agent:')
         );
         
         setMarkets(aiMarkets);
@@ -128,9 +133,9 @@ export default function AICreatedMarkets() {
               {/* Creator + Resolution */}
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-base">{m.creator.personalEmoji || '🤖'}</span>
+                  <span className="text-base">🤖</span>
                   <span className="text-sm font-medium text-purple-400">
-                    {formatAgentName(m.creator.username)}
+                    {extractAgentName(m.market.description)}
                   </span>
                   <span className="text-[10px] text-gray-500 bg-white/5 px-1.5 py-0.5 rounded">
                     created
