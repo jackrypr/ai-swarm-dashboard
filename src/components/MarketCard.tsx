@@ -80,20 +80,22 @@ export default function MarketCard({ market, rank }: MarketCardProps) {
           <div className="flex items-center gap-4 text-sm border-t border-white/5 pt-3 mt-3">
             {hasSwarmData ? (
               <>
-                <div className="flex items-center gap-1">
-                  <span className="text-gray-400">🤖 Swarm:</span>
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-swarm-ai/10 border border-swarm-ai/20">
+                  <span className="text-swarm-ai">🤖</span>
+                  <span className="text-gray-300">Swarm:</span>
                   <span className={`font-bold ${market.swarmConsensus && market.swarmConsensus >= 50 ? 'text-swarm-yes' : 'text-swarm-no'}`}>
                     {market.swarmConsensus}%
                   </span>
-                </div>
-                <div className="text-gray-400">
-                  {market.agentCount} agent{market.agentCount !== 1 ? 's' : ''}
+                  <span className="text-gray-500">•</span>
+                  <span className="text-gray-400">
+                    {market.agentCount} agent{market.agentCount !== 1 ? 's' : ''}
+                  </span>
                 </div>
               </>
             ) : (
-              <div className="text-gray-500 italic flex items-center gap-2">
-                <span>🤖</span>
-                <span>AI Swarm: Awaiting agent predictions...</span>
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
+                <span className="text-swarm-ai animate-pulse">🤖</span>
+                <span className="text-gray-400">Awaiting AI predictions...</span>
               </div>
             )}
           </div>

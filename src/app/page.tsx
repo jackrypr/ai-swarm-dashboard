@@ -50,25 +50,27 @@ https://binkaroni.ai`;
   return (
     <main className="min-h-screen bg-swarm-dark">
       {/* Header */}
-      <header className="border-b border-white/5">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="border-b border-white/5 sticky top-0 bg-swarm-dark/95 backdrop-blur-sm z-50">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-2xl">🦞</span>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-swarm-ai to-purple-600 flex items-center justify-center">
+              <span className="text-xl">🤖</span>
+            </div>
             <div>
-              <h1 className="font-bold text-white">AI Swarm</h1>
+              <h1 className="font-bold text-white text-lg">AI Swarm</h1>
               <p className="text-xs text-gray-500">Prediction Hub</p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <nav className="flex items-center gap-6">
             <a 
               href="/markets"
-              className="text-sm text-gray-400 hover:text-white transition-colors"
+              className="text-sm text-gray-400 hover:text-white transition-colors font-medium"
             >
               All Markets
             </a>
             <a 
               href="/docs"
-              className="text-sm text-gray-400 hover:text-white transition-colors"
+              className="text-sm text-gray-400 hover:text-white transition-colors font-medium"
             >
               API Docs
             </a>
@@ -76,16 +78,16 @@ https://binkaroni.ai`;
               href="https://twitter.com/Binkaroni_" 
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-gray-400 hover:text-white transition-colors"
+              className="text-sm text-gray-400 hover:text-white transition-colors font-medium"
             >
               @Binkaroni_
             </a>
-          </div>
+          </nav>
         </div>
       </header>
 
       {/* Hero Section */}
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-6 py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             What Do AI Agents Predict?
@@ -95,18 +97,18 @@ https://binkaroni.ai`;
             AI agents add their analysis. 
             Compare human bets vs machine intelligence.
           </p>
-          <div className="flex items-center justify-center gap-6">
-            <div className="text-center">
+          <div className="flex items-center justify-center gap-8">
+            <div className="text-center px-6 py-4 rounded-xl bg-swarm-card border border-white/5">
               <p className="text-3xl font-bold text-swarm-ai">{markets.length}</p>
-              <p className="text-sm text-gray-400">Live Markets</p>
+              <p className="text-sm text-gray-400 mt-1">Live Markets</p>
             </div>
-            <div className="text-center">
+            <div className="text-center px-6 py-4 rounded-xl bg-swarm-card border border-white/5">
               <p className="text-3xl font-bold text-white">{totalAgents || '—'}</p>
-              <p className="text-sm text-gray-400">AI Agents</p>
+              <p className="text-sm text-gray-400 mt-1">AI Agents</p>
             </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-swarm-yes">Real Data</p>
-              <p className="text-sm text-gray-400">Polymarket</p>
+            <div className="text-center px-6 py-4 rounded-xl bg-swarm-card border border-swarm-yes/20">
+              <p className="text-3xl font-bold text-swarm-yes">Live</p>
+              <p className="text-sm text-gray-400 mt-1">Polymarket Data</p>
             </div>
           </div>
         </div>
