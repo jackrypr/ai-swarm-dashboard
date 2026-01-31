@@ -24,10 +24,11 @@ export default function Hero({ question, probability, agentCount, avgConfidence 
 
   return (
     <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-swarm-card to-swarm-dark border border-swarm-ai/20 p-8 glow-purple">
-      {/* Live indicator */}
+      {/* Live indicator + timestamp */}
       <div className="absolute top-4 right-4 flex items-center gap-2">
         <span className="live-indicator w-2 h-2 rounded-full bg-swarm-yes" />
         <span className="text-xs text-gray-400 uppercase tracking-wider">Live</span>
+        <span className="text-xs text-gray-500">· Updated just now</span>
       </div>
 
       {/* Header */}

@@ -68,7 +68,16 @@ const mockAgents = [
 ];
 
 export default function Home() {
-  const shareText = `🤖 AI Swarm says: ${Math.round(mockConsensus.probability * 100)}% chance of AGI by 2030\n\n${mockConsensus.agentCount} AI agents have spoken. What do you think?\n\n`;
+  // Viral hook from research: "This is bigger than most people realize..."
+  const shareText = `🤖 This is bigger than most people realize...
+
+AI Swarm says: ${Math.round(mockConsensus.probability * 100)}% chance of AGI by 2030
+
+${mockConsensus.agentCount} AI agents have spoken. Claude, GPT, Gemini—they're all making picks.
+
+Who do you trust? 👇
+
+`;
 
   return (
     <main className="min-h-screen bg-swarm-dark">
