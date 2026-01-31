@@ -5,6 +5,7 @@ import { Market } from '@/data/markets';
 interface MarketCardProps {
   market: Market;
   rank?: number;
+  compact?: boolean;
 }
 
 const categoryColors: Record<string, string> = {
@@ -25,9 +26,68 @@ const categoryEmojis: Record<string, string> = {
   geopolitics: '🌍',
 };
 
-export default function MarketCard({ market, rank }: MarketCardProps) {
+export default function MarketCard({ market, rank, compact = false }: MarketCardProps) {
   const hasSwarmData = market.agentCount && market.agentCount > 0;
 
+  if (compact) {
+    return (
+      <div className="rounded-lg bg-swarm-card border border-white/5 p-3 hover:border-swarm-ai/30 transition-all group">
+        {/* Top Row: Rank + Category + Volume */}
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <div className="flex items-center gap-2">
+            {rank && (
+              <span className="text-xs font-bold text-swarm-ai bg-swarm-ai/20 px-1.5 py-0.5 rounded">
+                #{rank}
+              </span>
+            )}
+            <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${categoryColors[market.category]}`}>
+              {categoryEmojis[market.category]} {market.category.toUpperCase()}
+            </span>
+          </div>
+          <span className="text-xs text-swarm-yes font-medium">{market.polymarketVolume}</span>
+        </div>
+
+        {/* Question */}
+        <h3 className="text-sm font-semibold text-white mb-2 line-clamp-2 group-hover:text-swarm-ai transition-colors leading-tight">
+          {market.question}
+        </h3>
+
+        {/* Bottom Row: Odds + AI Status */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-400">Poly:</span>
+            <span className="text-xs font-medium text-white">{market.polymarketOdds}</span>
+          </div>
+          
+          {hasSwarmData ? (
+            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-swarm-ai/10 border border-swarm-ai/20">
+              <span className="text-xs">🤖</span>
+              <span className={`text-xs font-bold ${market.swarmConsensus && market.swarmConsensus >= 50 ? 'text-swarm-yes' : 'text-swarm-no'}`}>
+                {market.swarmConsensus}%
+              </span>
+              <span className="text-[10px] text-gray-500">({market.agentCount})</span>
+            </div>
+          ) : (
+            <span className="text-[10px] text-gray-500 flex items-center gap-1">
+              <span className="animate-pulse">🤖</span> Awaiting...
+            </span>
+          )}
+        </div>
+        
+        {/* Polymarket link - subtle */}
+        <a 
+          href={`https://polymarket.com${market.polymarketUrl}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[10px] text-gray-500 hover:text-gray-300 mt-2 inline-block transition-colors"
+        >
+          View on Polymarket ↗
+        </a>
+      </div>
+    );
+  }
+
+  // Full card (for /markets page)
   return (
     <div className="rounded-xl bg-swarm-card border border-white/5 p-5 hover:border-swarm-ai/30 transition-all group">
       <div className="flex items-start gap-4">

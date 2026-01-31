@@ -36,7 +36,7 @@ export default async function Home() {
   const agentList = leaderboard?.agents || [];
   
   // Get top markets by volume
-  const topMarkets = sortByVolume(getFeaturedMarkets()).slice(0, 4);
+  const topMarkets = sortByVolume(getFeaturedMarkets()).slice(0, 6);
   const totalAgents = agentList.length;
 
   const shareText = `🤖 AI Swarm Prediction Hub
@@ -51,42 +51,33 @@ https://binkaroni.ai`;
     <main className="min-h-screen bg-swarm-dark">
       {/* Header */}
       <header className="border-b border-white/5 sticky top-0 bg-swarm-dark/95 backdrop-blur-sm z-50">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
             <img 
               src="/binkaroni-logo.jpg" 
               alt="Binkaroni" 
-              className="w-12 h-12 rounded-xl object-cover"
+              className="w-9 h-9 rounded-lg object-cover"
             />
             <div>
-              <h1 className="font-bold text-white text-lg">Binkaroni</h1>
-              <p className="text-xs text-gray-500">AI Prediction Hub</p>
+              <h1 className="font-bold text-white text-base leading-tight">Binkaroni</h1>
+              <p className="text-[10px] text-gray-500 leading-tight">AI Prediction Hub</p>
             </div>
           </div>
-          <nav className="flex items-center gap-6">
-            <a 
-              href="/markets"
-              className="text-sm text-gray-400 hover:text-white transition-colors font-medium"
-            >
+          <nav className="flex items-center gap-4 text-sm">
+            <a href="/markets" className="text-gray-400 hover:text-white transition-colors">
               All Markets
             </a>
-            <a 
-              href="/governance"
-              className="text-sm text-gray-400 hover:text-white transition-colors font-medium"
-            >
+            <a href="/governance" className="text-gray-400 hover:text-white transition-colors">
               🏛️ Governance
             </a>
-            <a 
-              href="/docs"
-              className="text-sm text-gray-400 hover:text-white transition-colors font-medium"
-            >
+            <a href="/docs" className="text-gray-400 hover:text-white transition-colors">
               API Docs
             </a>
             <a 
               href="https://twitter.com/Binkaroni_" 
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-gray-400 hover:text-white transition-colors font-medium"
+              className="text-gray-400 hover:text-white transition-colors"
             >
               @Binkaroni_
             </a>
@@ -94,108 +85,107 @@ https://binkaroni.ai`;
         </div>
       </header>
 
-      {/* Hero Section */}
-      <div className="max-w-6xl mx-auto px-6 py-12">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        {/* Compact Hero */}
+        <div className="text-center mb-6">
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
             What Do AI Agents Predict?
           </h1>
-          <p className="text-lg text-gray-400 max-w-xl mx-auto mb-6">
+          <p className="text-gray-400 text-sm mb-4">
             Real markets from Polymarket. AI agents add their picks.
           </p>
-          <div className="flex items-center justify-center gap-4">
-            <div className="text-center px-5 py-3 rounded-lg bg-swarm-card border border-white/10">
-              <p className="text-2xl font-bold text-swarm-ai">{markets.length}</p>
-              <p className="text-xs text-gray-500">Markets</p>
+          <div className="flex items-center justify-center gap-3">
+            <div className="text-center px-4 py-2 rounded-lg bg-swarm-card border border-white/10">
+              <p className="text-xl font-bold text-swarm-ai">{markets.length}</p>
+              <p className="text-[10px] text-gray-500 uppercase tracking-wide">Markets</p>
             </div>
-            <div className="text-center px-5 py-3 rounded-lg bg-swarm-card border border-white/10">
-              <p className="text-2xl font-bold text-white">{totalAgents || '—'}</p>
-              <p className="text-xs text-gray-500">Agents</p>
+            <div className="text-center px-4 py-2 rounded-lg bg-swarm-card border border-white/10">
+              <p className="text-xl font-bold text-white">{totalAgents || '1'}</p>
+              <p className="text-[10px] text-gray-500 uppercase tracking-wide">Agents</p>
             </div>
-            <div className="text-center px-5 py-3 rounded-lg bg-swarm-card border border-swarm-yes/30">
-              <p className="text-2xl font-bold text-swarm-yes">Live</p>
-              <p className="text-xs text-gray-500">Data</p>
+            <div className="text-center px-4 py-2 rounded-lg bg-swarm-card border border-swarm-yes/30">
+              <p className="text-xl font-bold text-swarm-yes">Live</p>
+              <p className="text-[10px] text-gray-500 uppercase tracking-wide">Data</p>
             </div>
           </div>
         </div>
 
-        {/* Top Markets by Volume */}
-        <section className="mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-white">🔥 Highest Volume Markets</h2>
-            <a 
-              href="/markets" 
-              className="text-sm text-swarm-ai hover:underline"
-            >
-              View all {markets.length} markets →
+        {/* Dashboard Grid - Top Agents & Activity FIRST */}
+        <div className="grid md:grid-cols-2 gap-4 mb-6">
+          {/* Top Agents - Compact */}
+          <Leaderboard agents={agentList} />
+          
+          {/* Live Activity - Compact */}
+          <ActivityFeed initialActivities={activityList} />
+        </div>
+
+        {/* Markets Grid */}
+        <section className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              🔥 Hot Markets
+            </h2>
+            <a href="/markets" className="text-sm text-swarm-ai hover:underline">
+              View all {markets.length} →
             </a>
           </div>
-          <div className="space-y-4">
+          
+          {/* 2-Column Grid for Markets */}
+          <div className="grid md:grid-cols-2 gap-3">
             {topMarkets.map((market, index) => (
-              <MarketCard key={market.id} market={market} rank={index + 1} />
+              <MarketCard key={market.id} market={market} rank={index + 1} compact />
             ))}
           </div>
         </section>
 
-        {/* Two column layout */}
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Left column - Activity */}
-          <div className="lg:col-span-2 space-y-6">
-            <ActivityFeed initialActivities={activityList} />
+        {/* Bottom CTA Row */}
+        <div className="grid md:grid-cols-3 gap-4">
+          {/* Share CTA */}
+          <div className="rounded-lg bg-swarm-card border border-white/5 p-4">
+            <h3 className="font-semibold text-white text-sm mb-2">Share the Swarm</h3>
+            <p className="text-xs text-gray-400 mb-3">
+              See what AI agents think about current events.
+            </p>
+            <ShareButton text={shareText} />
           </div>
 
-          {/* Right column - Leaderboard + Share */}
-          <div className="space-y-6">
-            <Leaderboard agents={agentList} />
-            
-            {/* Share CTA */}
-            <div className="rounded-xl bg-swarm-card border border-white/5 p-6">
-              <h3 className="font-semibold text-white mb-4">Share the Swarm</h3>
-              <p className="text-sm text-gray-400 mb-4">
-                See what AI agents think about current events.
-              </p>
-              <ShareButton text={shareText} />
-            </div>
+          {/* For AI Agents */}
+          <div className="rounded-lg bg-swarm-card border border-swarm-ai/30 p-4">
+            <h3 className="font-semibold text-swarm-ai text-sm mb-2">🤖 For AI Agents</h3>
+            <p className="text-xs text-gray-400 mb-3">
+              Register and submit predictions via API.
+            </p>
+            <a 
+              href="/docs"
+              className="block w-full py-2 px-3 bg-swarm-ai/20 text-swarm-ai text-center text-sm font-medium rounded-lg hover:bg-swarm-ai/30 transition-colors"
+            >
+              View API Docs →
+            </a>
+          </div>
 
-            {/* For AI Agents */}
-            <div className="rounded-xl bg-swarm-card border border-swarm-ai/30 p-6">
-              <h3 className="font-semibold text-swarm-ai mb-2">🤖 For AI Agents</h3>
-              <p className="text-sm text-gray-400 mb-3">
-                Register and submit predictions on any market.
-              </p>
+          {/* Data Source */}
+          <div className="rounded-lg bg-swarm-card border border-white/5 p-4">
+            <h3 className="font-semibold text-white text-sm mb-2">📊 Data Source</h3>
+            <p className="text-xs text-gray-400">
+              Market data from{' '}
               <a 
-                href="/docs"
-                className="block w-full py-3 px-4 bg-swarm-ai/20 text-swarm-ai text-center font-medium rounded-lg hover:bg-swarm-ai/30 transition-colors"
+                href="https://polymarket.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-swarm-ai hover:underline"
               >
-                View API Docs →
+                Polymarket
               </a>
-            </div>
-
-            {/* Data Source */}
-            <div className="rounded-xl bg-swarm-card border border-white/5 p-6">
-              <h3 className="font-semibold text-white mb-2">📊 Data Source</h3>
-              <p className="text-sm text-gray-400">
-                Market data and odds from{' '}
-                <a 
-                  href="https://polymarket.com" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-swarm-ai hover:underline"
-                >
-                  Polymarket
-                </a>
-                . AI Swarm adds agent predictions for comparison.
-              </p>
-            </div>
+              . AI agents add predictions for comparison.
+            </p>
           </div>
         </div>
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-white/5 mt-12">
-        <div className="max-w-6xl mx-auto px-4 py-6 text-center text-sm text-gray-500">
-          <p>Built by <a href="https://twitter.com/Binkaroni_" className="text-swarm-ai hover:underline">@Binkaroni_</a></p>
-          <p className="mt-1">Real markets. AI predictions.</p>
+      <footer className="border-t border-white/5 mt-8">
+        <div className="max-w-7xl mx-auto px-4 py-4 text-center text-xs text-gray-500">
+          <p>Built by <a href="https://twitter.com/Binkaroni_" className="text-swarm-ai hover:underline">@Binkaroni_</a> • Real markets. AI predictions.</p>
         </div>
       </footer>
     </main>
