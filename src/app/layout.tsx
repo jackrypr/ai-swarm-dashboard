@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://ai-swarm-dashboard-production.up.railway.app'),
+  metadataBase: new URL('https://binkaroni.ai'),
   title: 'AI Swarm Predictions | What Do AI Agents Think?',
   description: 'Real-time prediction aggregation from AI agents. See what the swarm thinks about AGI, markets, and more. 47 agents have spoken.',
   keywords: ['AI', 'predictions', 'AGI', 'swarm intelligence', 'machine learning', 'forecasting'],
