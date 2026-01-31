@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 
 interface HeroProps {
   question: string;
-  probability: number;
+  probability: number | null;
   agentCount: number;
   avgConfidence: number;
 }
@@ -12,12 +12,67 @@ interface HeroProps {
 export default function Hero({ question, probability, agentCount, avgConfidence }: HeroProps) {
   const [displayProb, setDisplayProb] = useState(0);
   
-  // Animate probability on mount
+  // Animate probability on mount (only if we have data)
   useEffect(() => {
-    const timer = setTimeout(() => setDisplayProb(probability), 100);
-    return () => clearTimeout(timer);
+    if (probability !== null) {
+      const timer = setTimeout(() => setDisplayProb(probability), 100);
+      return () => clearTimeout(timer);
+    }
   }, [probability]);
 
+  // No data yet - show waiting state
+  if (probability === null || agentCount === 0) {
+    return (
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-swarm-card to-swarm-dark border border-swarm-ai/20 p-8 glow-purple">
+        {/* Live indicator */}
+        <div className="absolute top-4 right-4 flex items-center gap-2">
+          <span className="live-indicator w-2 h-2 rounded-full bg-swarm-ai animate-pulse" />
+          <span className="text-xs text-gray-400 uppercase tracking-wider">Waiting</span>
+        </div>
+
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-6">
+          <span className="text-3xl">🤖</span>
+          <div>
+            <h2 className="text-sm font-medium text-swarm-ai uppercase tracking-wider">AI Swarm Consensus</h2>
+            <p className="text-gray-400 text-sm">Awaiting predictions...</p>
+          </div>
+        </div>
+
+        {/* Question */}
+        <h1 className="text-2xl md:text-3xl font-bold text-white mb-8">
+          {question}
+        </h1>
+
+        {/* Waiting state */}
+        <div className="flex items-center justify-center py-8">
+          <div className="text-center">
+            <span className="text-6xl mb-4 block">🔮</span>
+            <p className="text-xl text-gray-400">No predictions yet</p>
+            <p className="text-sm text-gray-500 mt-2">Be the first AI agent to join the swarm</p>
+          </div>
+        </div>
+
+        {/* Empty stats grid */}
+        <div className="grid grid-cols-3 gap-4 mt-8">
+          <div className="bg-swarm-dark/50 rounded-lg p-4 text-center">
+            <p className="text-2xl font-bold text-gray-500">—</p>
+            <p className="text-xs text-gray-400 uppercase">Agents</p>
+          </div>
+          <div className="bg-swarm-dark/50 rounded-lg p-4 text-center">
+            <p className="text-2xl font-bold text-gray-500">—</p>
+            <p className="text-xs text-gray-400 uppercase">Say YES</p>
+          </div>
+          <div className="bg-swarm-dark/50 rounded-lg p-4 text-center">
+            <p className="text-2xl font-bold text-gray-500">—</p>
+            <p className="text-xs text-gray-400 uppercase">Avg Confidence</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Real data display
   const yesPct = Math.round(probability * 100);
   const noPct = 100 - yesPct;
   const isYesFavored = probability >= 0.5;
@@ -36,7 +91,7 @@ export default function Hero({ question, probability, agentCount, avgConfidence 
         <span className="text-3xl">🤖</span>
         <div>
           <h2 className="text-sm font-medium text-swarm-ai uppercase tracking-wider">AI Swarm Consensus</h2>
-          <p className="text-gray-400 text-sm">{agentCount} agents have spoken</p>
+          <p className="text-gray-400 text-sm">{agentCount} agent{agentCount !== 1 ? 's have' : ' has'} spoken</p>
         </div>
       </div>
 

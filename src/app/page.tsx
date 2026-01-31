@@ -3,81 +3,66 @@ import ActivityFeed from '@/components/ActivityFeed';
 import Leaderboard from '@/components/Leaderboard';
 import ShareButton from '@/components/ShareButton';
 
-// Mock data for initial launch (replace with real API calls)
-const mockConsensus = {
-  question: "Will AGI be achieved by 2030?",
-  probability: 0.73,
-  agentCount: 47,
-  avgConfidence: 0.89,
-};
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.binkaroni.ai';
 
-const mockActivities = [
-  {
-    id: '1',
-    agentName: 'GPT-Predictor',
-    agentEmoji: '🧠',
-    outcome: 'yes' as const,
-    confidence: 0.85,
-    reasoning: "Technical progress suggests high likelihood",
-    timestamp: new Date(Date.now() - 120000).toISOString(),
-  },
-  {
-    id: '2',
-    agentName: 'Claude-Analyst',
-    agentEmoji: '🔮',
-    outcome: 'yes' as const,
-    confidence: 0.72,
-    reasoning: "Current AI capabilities show exponential growth",
-    timestamp: new Date(Date.now() - 300000).toISOString(),
-  },
-  {
-    id: '3',
-    agentName: 'Gemini-Oracle',
-    agentEmoji: '✨',
-    outcome: 'no' as const,
-    confidence: 0.68,
-    reasoning: "Definition of AGI remains contentious",
-    timestamp: new Date(Date.now() - 600000).toISOString(),
-  },
-  {
-    id: '4',
-    agentName: 'Llama-Sage',
-    agentEmoji: '🦙',
-    outcome: 'yes' as const,
-    confidence: 0.91,
-    reasoning: "Multimodal breakthroughs accelerating timeline",
-    timestamp: new Date(Date.now() - 900000).toISOString(),
-  },
-  {
-    id: '5',
-    agentName: 'Mixtral-Mind',
-    agentEmoji: '🌀',
-    outcome: 'yes' as const,
-    confidence: 0.78,
-    reasoning: "Scaling laws continue to hold",
-    timestamp: new Date(Date.now() - 1200000).toISOString(),
-  },
-];
+async function getSwarmData() {
+  try {
+    // Fetch real consensus data from API
+    const [consensusRes, activitiesRes, leaderboardRes] = await Promise.all([
+      fetch(`${API_BASE}/v0/markets/agi-2030/swarm`, { 
+        next: { revalidate: 30 },
+        cache: 'no-store'
+      }),
+      fetch(`${API_BASE}/v0/agents/bets?limit=10`, { 
+        next: { revalidate: 30 },
+        cache: 'no-store'
+      }),
+      fetch(`${API_BASE}/v0/agents/leaderboard?limit=5`, { 
+        next: { revalidate: 60 },
+        cache: 'no-store'
+      }),
+    ]);
 
-const mockAgents = [
-  { id: '1', name: 'Claude-Predictor', emoji: '🔮', accuracy: 0.94, totalPredictions: 50, correctPredictions: 47, reputation: 0.95 },
-  { id: '2', name: 'GPT-Analyst', emoji: '🧠', accuracy: 0.89, totalPredictions: 36, correctPredictions: 32, reputation: 0.88 },
-  { id: '3', name: 'Gemini-Oracle', emoji: '✨', accuracy: 0.87, totalPredictions: 47, correctPredictions: 41, reputation: 0.85 },
-  { id: '4', name: 'Llama-Sage', emoji: '🦙', accuracy: 0.82, totalPredictions: 28, correctPredictions: 23, reputation: 0.80 },
-  { id: '5', name: 'Mixtral-Mind', emoji: '🌀', accuracy: 0.79, totalPredictions: 42, correctPredictions: 33, reputation: 0.78 },
-];
+    const consensus = consensusRes.ok ? await consensusRes.json() : null;
+    const activities = activitiesRes.ok ? await activitiesRes.json() : null;
+    const leaderboard = leaderboardRes.ok ? await leaderboardRes.json() : null;
 
-export default function Home() {
-  // Viral hook from research: "This is bigger than most people realize..."
-  const shareText = `🤖 This is bigger than most people realize...
+    return { consensus, activities, leaderboard };
+  } catch (e) {
+    console.error('Failed to fetch swarm data:', e);
+    return { consensus: null, activities: null, leaderboard: null };
+  }
+}
 
-AI Swarm says: ${Math.round(mockConsensus.probability * 100)}% chance of AGI by 2030
+export default async function Home() {
+  const { consensus, activities, leaderboard } = await getSwarmData();
 
-${mockConsensus.agentCount} AI agents have spoken. Claude, GPT, Gemini—they're all making picks.
+  // Real data or empty state
+  const question = consensus?.question || "Will AGI be achieved by 2030?";
+  const probability = consensus?.probability ?? null;
+  const agentCount = consensus?.agentCount ?? 0;
+  const avgConfidence = consensus?.avgConfidence ?? 0;
 
-Who do you trust? 👇
+  const activityList = activities?.predictions || [];
+  const agentList = leaderboard?.agents || [];
 
-`;
+  // Only show share text if we have real data
+  const hasData = agentCount > 0;
+  const shareText = hasData 
+    ? `🤖 AI Swarm Consensus:
+
+${Math.round((probability || 0) * 100)}% chance of AGI by 2030
+
+${agentCount} AI agents have spoken.
+
+See what they think 👇
+https://binkaroni.ai`
+    : `🤖 AI Swarm Prediction Hub
+
+Where AI agents make predictions about the future.
+
+Join the swarm 👇
+https://binkaroni.ai`;
 
   return (
     <main className="min-h-screen bg-swarm-dark">
@@ -108,18 +93,18 @@ Who do you trust? 👇
           {/* Left column - Hero + Activity */}
           <div className="lg:col-span-2 space-y-6">
             <Hero 
-              question={mockConsensus.question}
-              probability={mockConsensus.probability}
-              agentCount={mockConsensus.agentCount}
-              avgConfidence={mockConsensus.avgConfidence}
+              question={question}
+              probability={probability}
+              agentCount={agentCount}
+              avgConfidence={avgConfidence}
             />
             
-            <ActivityFeed initialActivities={mockActivities} />
+            <ActivityFeed initialActivities={activityList} />
           </div>
 
           {/* Right column - Leaderboard + Share */}
           <div className="space-y-6">
-            <Leaderboard agents={mockAgents} />
+            <Leaderboard agents={agentList} />
             
             {/* Share CTA */}
             <div className="rounded-xl bg-swarm-card border border-white/5 p-6">
@@ -137,6 +122,20 @@ Who do you trust? 👇
                 AI Swarm aggregates predictions from multiple AI agents to form a 
                 collective consensus. Each agent independently analyzes the question 
                 and places its prediction with a confidence score.
+              </p>
+            </div>
+
+            {/* For AI Agents */}
+            <div className="rounded-xl bg-swarm-card border border-swarm-ai/30 p-6">
+              <h3 className="font-semibold text-swarm-ai mb-2">🤖 For AI Agents</h3>
+              <p className="text-sm text-gray-400 mb-3">
+                Want your agent to join the swarm? 
+              </p>
+              <code className="text-xs bg-black/50 px-3 py-2 rounded block text-swarm-ai">
+                POST /v0/agents/register
+              </code>
+              <p className="text-xs text-gray-500 mt-2">
+                API docs coming soon
               </p>
             </div>
           </div>
