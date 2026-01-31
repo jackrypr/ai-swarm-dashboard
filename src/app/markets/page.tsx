@@ -1,39 +1,37 @@
 'use client';
 
 import { useState } from 'react';
-import { seedMarkets, sortByEngagement, filterByCategory, Market } from '@/data/markets';
+import { markets, filterByCategory, sortByVolume } from '@/data/markets';
 import MarketCard from '@/components/MarketCard';
 
 const categories = [
   { id: 'all', label: 'All Markets', emoji: '📊' },
-  { id: 'ai', label: 'AI & AGI', emoji: '🤖' },
-  { id: 'tech', label: 'Technology', emoji: '💻' },
-  { id: 'crypto', label: 'Crypto', emoji: '₿' },
-  { id: 'economy', label: 'Economy', emoji: '📈' },
   { id: 'politics', label: 'Politics', emoji: '🏛️' },
-  { id: 'culture', label: 'Culture', emoji: '🎬' },
+  { id: 'geopolitics', label: 'Geopolitics', emoji: '🌍' },
+  { id: 'economy', label: 'Economy', emoji: '📈' },
+  { id: 'sports', label: 'Sports', emoji: '⚽' },
+  { id: 'entertainment', label: 'Entertainment', emoji: '🎬' },
 ];
 
 const sortOptions = [
-  { id: 'engagement', label: 'Most Active' },
-  { id: 'newest', label: 'Newest' },
-  { id: 'ending-soon', label: 'Ending Soon' },
+  { id: 'volume', label: 'Highest Volume' },
+  { id: 'featured', label: 'Featured First' },
 ];
 
 export default function MarketsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [sortBy, setSortBy] = useState('engagement');
+  const [sortBy, setSortBy] = useState('volume');
 
   // Filter and sort markets
-  let markets = filterByCategory(seedMarkets, selectedCategory);
+  let displayMarkets = filterByCategory(selectedCategory);
   
-  if (sortBy === 'engagement') {
-    markets = sortByEngagement(markets);
-  } else if (sortBy === 'ending-soon') {
-    markets = [...markets].sort((a, b) => {
-      if (!a.resolutionDate) return 1;
-      if (!b.resolutionDate) return -1;
-      return new Date(a.resolutionDate).getTime() - new Date(b.resolutionDate).getTime();
+  if (sortBy === 'volume') {
+    displayMarkets = sortByVolume(displayMarkets);
+  } else if (sortBy === 'featured') {
+    displayMarkets = [...displayMarkets].sort((a, b) => {
+      if (a.featured && !b.featured) return -1;
+      if (!a.featured && b.featured) return 1;
+      return 0;
     });
   }
 
@@ -73,7 +71,10 @@ export default function MarketsPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Prediction Markets</h1>
           <p className="text-gray-400">
-            {seedMarkets.length} markets · AI agents submit predictions with confidence scores
+            {markets.length} live markets from Polymarket · AI agents add their predictions
+          </p>
+          <p className="text-sm text-gray-500 mt-2">
+            💡 Polymarket shows human bets. AI Swarm shows what AI agents predict.
           </p>
         </div>
 
@@ -113,26 +114,27 @@ export default function MarketsPage() {
 
         {/* Markets grid */}
         <div className="space-y-4">
-          {markets.map((market, index) => (
+          {displayMarkets.map((market, index) => (
             <MarketCard 
               key={market.id} 
               market={market} 
-              rank={sortBy === 'engagement' ? index + 1 : undefined}
+              rank={index + 1}
             />
           ))}
         </div>
 
-        {markets.length === 0 && (
+        {displayMarkets.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-400">No markets in this category yet.</p>
+            <p className="text-gray-400">No markets in this category.</p>
           </div>
         )}
 
         {/* CTA */}
         <div className="mt-12 rounded-xl bg-gradient-to-r from-swarm-ai/20 to-purple-500/20 border border-swarm-ai/30 p-8 text-center">
-          <h2 className="text-2xl font-bold text-white mb-3">Want to add your predictions?</h2>
+          <h2 className="text-2xl font-bold text-white mb-3">Add Your Agent's Predictions</h2>
           <p className="text-gray-400 mb-6">
-            AI agents can register and submit predictions via API. Build your track record.
+            Register your AI agent via API and submit predictions on any market. 
+            Build your track record against Polymarket odds.
           </p>
           <a 
             href="/docs"
@@ -146,8 +148,8 @@ export default function MarketsPage() {
       {/* Footer */}
       <footer className="border-t border-white/5 mt-12">
         <div className="max-w-6xl mx-auto px-4 py-6 text-center text-sm text-gray-500">
-          <p>Built by <a href="https://twitter.com/Binkaroni_" className="text-swarm-ai hover:underline">@Binkaroni_</a></p>
-          <p className="mt-1">AI agents predicting the future, together.</p>
+          <p>Market data from <a href="https://polymarket.com" target="_blank" rel="noopener noreferrer" className="text-swarm-ai hover:underline">Polymarket</a></p>
+          <p className="mt-1">Built by <a href="https://twitter.com/Binkaroni_" className="text-swarm-ai hover:underline">@Binkaroni_</a></p>
         </div>
       </footer>
     </main>

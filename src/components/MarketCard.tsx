@@ -8,28 +8,25 @@ interface MarketCardProps {
 }
 
 const categoryColors: Record<string, string> = {
-  ai: 'bg-purple-500/20 text-purple-400',
-  tech: 'bg-blue-500/20 text-blue-400',
-  crypto: 'bg-orange-500/20 text-orange-400',
   politics: 'bg-red-500/20 text-red-400',
   economy: 'bg-green-500/20 text-green-400',
-  culture: 'bg-pink-500/20 text-pink-400',
+  sports: 'bg-blue-500/20 text-blue-400',
+  entertainment: 'bg-pink-500/20 text-pink-400',
+  crypto: 'bg-orange-500/20 text-orange-400',
+  geopolitics: 'bg-purple-500/20 text-purple-400',
 };
 
 const categoryEmojis: Record<string, string> = {
-  ai: '🤖',
-  tech: '💻',
-  crypto: '₿',
   politics: '🏛️',
   economy: '📈',
-  culture: '🎬',
+  sports: '⚽',
+  entertainment: '🎬',
+  crypto: '₿',
+  geopolitics: '🌍',
 };
 
 export default function MarketCard({ market, rank }: MarketCardProps) {
-  const hasData = market.agentCount && market.agentCount > 0;
-  const consensus = market.consensus !== null && market.consensus !== undefined 
-    ? Math.round(market.consensus * 100) 
-    : null;
+  const hasSwarmData = market.agentCount && market.agentCount > 0;
 
   return (
     <div className="rounded-xl bg-swarm-card border border-white/5 p-5 hover:border-swarm-ai/30 transition-all group">
@@ -43,15 +40,18 @@ export default function MarketCard({ market, rank }: MarketCardProps) {
         
         <div className="flex-1 min-w-0">
           {/* Category + Source */}
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
             <span className={`px-2 py-0.5 rounded text-xs font-medium ${categoryColors[market.category]}`}>
               {categoryEmojis[market.category]} {market.category.toUpperCase()}
             </span>
-            {market.source === 'polymarket' && (
-              <span className="px-2 py-0.5 rounded text-xs bg-white/5 text-gray-400">
-                via Polymarket
-              </span>
-            )}
+            <a 
+              href={`https://polymarket.com${market.polymarketUrl}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-2 py-0.5 rounded text-xs bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+            >
+              Polymarket ↗
+            </a>
             {market.featured && (
               <span className="px-2 py-0.5 rounded text-xs bg-swarm-ai/20 text-swarm-ai">
                 ⭐ Featured
@@ -60,58 +60,44 @@ export default function MarketCard({ market, rank }: MarketCardProps) {
           </div>
 
           {/* Question */}
-          <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-swarm-ai transition-colors">
+          <h3 className="text-lg font-semibold text-white mb-3 group-hover:text-swarm-ai transition-colors">
             {market.question}
           </h3>
 
-          {/* Description */}
-          {market.description && (
-            <p className="text-sm text-gray-400 mb-3 line-clamp-2">
-              {market.description}
-            </p>
-          )}
+          {/* Polymarket Data */}
+          <div className="flex flex-wrap items-center gap-3 mb-3">
+            <div className="px-3 py-1.5 rounded-lg bg-swarm-dark">
+              <span className="text-xs text-gray-400 block">Polymarket</span>
+              <span className="text-sm font-medium text-white">{market.polymarketOdds}</span>
+            </div>
+            <div className="px-3 py-1.5 rounded-lg bg-swarm-dark">
+              <span className="text-xs text-gray-400 block">Volume</span>
+              <span className="text-sm font-medium text-swarm-yes">{market.polymarketVolume}</span>
+            </div>
+          </div>
 
-          {/* Stats */}
-          <div className="flex items-center gap-4 text-sm">
-            {hasData ? (
+          {/* AI Swarm Data */}
+          <div className="flex items-center gap-4 text-sm border-t border-white/5 pt-3 mt-3">
+            {hasSwarmData ? (
               <>
                 <div className="flex items-center gap-1">
-                  <span className={`font-bold ${consensus && consensus >= 50 ? 'text-swarm-yes' : 'text-swarm-no'}`}>
-                    {consensus}% YES
+                  <span className="text-gray-400">🤖 Swarm:</span>
+                  <span className={`font-bold ${market.swarmConsensus && market.swarmConsensus >= 50 ? 'text-swarm-yes' : 'text-swarm-no'}`}>
+                    {market.swarmConsensus}%
                   </span>
                 </div>
                 <div className="text-gray-400">
                   {market.agentCount} agent{market.agentCount !== 1 ? 's' : ''}
                 </div>
-                {market.avgConfidence && (
-                  <div className="text-gray-400">
-                    {Math.round(market.avgConfidence * 100)}% avg confidence
-                  </div>
-                )}
               </>
             ) : (
-              <div className="text-gray-500 italic">
-                Awaiting predictions...
-              </div>
-            )}
-            
-            {market.resolutionDate && (
-              <div className="text-gray-500 ml-auto">
-                Resolves: {new Date(market.resolutionDate).toLocaleDateString()}
+              <div className="text-gray-500 italic flex items-center gap-2">
+                <span>🤖</span>
+                <span>AI Swarm: Awaiting agent predictions...</span>
               </div>
             )}
           </div>
         </div>
-
-        {/* Consensus indicator */}
-        {hasData && consensus !== null && (
-          <div className="flex-shrink-0 w-16 h-16 rounded-lg bg-swarm-dark flex flex-col items-center justify-center">
-            <span className={`text-2xl font-bold ${consensus >= 50 ? 'text-swarm-yes' : 'text-swarm-no'}`}>
-              {consensus}%
-            </span>
-            <span className="text-xs text-gray-400">consensus</span>
-          </div>
-        )}
       </div>
     </div>
   );

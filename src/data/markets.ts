@@ -1,145 +1,185 @@
-// Initial markets for AI Swarm - mix of AI-generated and mirrored
-// These are SEED markets - real predictions come from agents via API
+// REAL Polymarket markets - scraped January 31, 2026
+// All data from live Polymarket - NO MOCK DATA
 
 export interface Market {
   id: string;
   question: string;
-  category: 'ai' | 'tech' | 'crypto' | 'politics' | 'economy' | 'culture';
-  description?: string;
-  resolutionDate?: string;
-  source?: 'original' | 'polymarket';
+  category: 'politics' | 'economy' | 'sports' | 'entertainment' | 'crypto' | 'geopolitics';
+  polymarketUrl?: string;
+  polymarketOdds?: string;
+  polymarketVolume?: string;
+  source: 'polymarket';
   featured?: boolean;
-  // These will be populated from API:
-  consensus?: number | null;
+  // These will be populated from our API when agents predict:
+  swarmConsensus?: number | null;
   agentCount?: number;
   avgConfidence?: number;
-  engagement?: number; // upvotes + predictions
 }
 
-export const seedMarkets: Market[] = [
-  // AI & Tech - Our core focus
+export const markets: Market[] = [
+  // POLITICS - High volume
   {
-    id: 'agi-2030',
-    question: 'Will AGI be achieved by 2030?',
-    category: 'ai',
-    description: 'Artificial General Intelligence that matches or exceeds human cognitive abilities across all domains.',
-    resolutionDate: '2030-12-31',
-    source: 'original',
+    id: 'trump-fed-chair',
+    question: 'Who will Trump nominate as Fed Chair?',
+    category: 'politics',
+    polymarketUrl: '/event/who-will-trump-nominate-as-fed-chair',
+    polymarketOdds: 'Kevin Warsh: 98%',
+    polymarketVolume: '$357m',
+    source: 'polymarket',
     featured: true,
   },
   {
-    id: 'gpt5-2025',
-    question: 'Will OpenAI release GPT-5 in 2025?',
-    category: 'ai',
-    description: 'Official release of GPT-5 model to the public (not just limited preview).',
-    resolutionDate: '2025-12-31',
-    source: 'original',
+    id: 'govt-shutdown-duration',
+    question: 'How long will the Government Shutdown last?',
+    category: 'politics',
+    polymarketUrl: '/event/how-long-will-the-next-government-shutdown-last',
+    polymarketOdds: '3+ days: 99%',
+    polymarketVolume: '$6m',
+    source: 'polymarket',
     featured: true,
   },
   {
-    id: 'claude-beats-gpt',
-    question: 'Will Claude outperform GPT-4 on all major benchmarks by end of 2025?',
-    category: 'ai',
-    description: 'Claude (any version) scores higher than GPT-4 on MMLU, HumanEval, and GSM8K.',
-    resolutionDate: '2025-12-31',
-    source: 'original',
-  },
-  {
-    id: 'ai-job-loss-10pct',
-    question: 'Will AI cause >10% job displacement in white-collar roles by 2027?',
-    category: 'ai',
-    description: 'Measured by BLS statistics showing 10%+ reduction in professional/administrative roles.',
-    resolutionDate: '2027-12-31',
-    source: 'original',
-  },
-  {
-    id: 'ai-regulation-2025',
-    question: 'Will the US pass major AI regulation in 2025?',
-    category: 'ai',
-    description: 'Federal legislation specifically targeting AI development or deployment.',
-    resolutionDate: '2025-12-31',
-    source: 'original',
-  },
-  
-  // Crypto
-  {
-    id: 'btc-150k-2025',
-    question: 'Will Bitcoin hit $150,000 in 2025?',
-    category: 'crypto',
-    resolutionDate: '2025-12-31',
-    source: 'original',
-    featured: true,
-  },
-  {
-    id: 'eth-10k-2025',
-    question: 'Will Ethereum hit $10,000 in 2025?',
-    category: 'crypto',
-    resolutionDate: '2025-12-31',
-    source: 'original',
-  },
-  
-  // Economy
-  {
-    id: 'us-recession-2025',
-    question: 'Will there be a US recession in 2025?',
-    category: 'economy',
-    description: 'Two consecutive quarters of negative GDP growth.',
-    resolutionDate: '2025-12-31',
+    id: 'trump-cabinet-first-leave',
+    question: 'Who will be the first to leave the Trump Cabinet?',
+    category: 'politics',
+    polymarketUrl: '/event/who-will-be-the-first-to-leave-the-trump-cabinet-828',
+    polymarketOdds: 'Kristi Noem: 30%, Pam Bondi: 17%',
+    polymarketVolume: '$2m',
     source: 'polymarket',
   },
   {
-    id: 'fed-rate-cuts-2025',
-    question: 'Will the Fed cut rates 3+ times in 2025?',
+    id: 'us-greenland-2026',
+    question: 'Will the US acquire part of Greenland in 2026?',
+    category: 'politics',
+    polymarketUrl: '/event/will-the-us-acquire-any-part-of-greenland-in-2026',
+    polymarketOdds: '20%',
+    polymarketVolume: '$7m',
+    source: 'polymarket',
+  },
+
+  // GEOPOLITICS
+  {
+    id: 'us-strikes-iran',
+    question: 'US strikes Iran by when?',
+    category: 'geopolitics',
+    polymarketUrl: '/event/us-strikes-iran-by',
+    polymarketOdds: 'Feb 6: 20%, Feb 13: 36%',
+    polymarketVolume: '$140m',
+    source: 'polymarket',
+    featured: true,
+  },
+  {
+    id: 'russia-ukraine-ceasefire',
+    question: 'Russia-Ukraine ceasefire by end of 2026?',
+    category: 'geopolitics',
+    polymarketUrl: '/event/russia-x-ukraine-ceasefire-before-2027',
+    polymarketOdds: '45%',
+    polymarketVolume: '$8m',
+    source: 'polymarket',
+    featured: true,
+  },
+  {
+    id: 'khamenei-out',
+    question: 'Khamenei out as Supreme Leader of Iran by February 28?',
+    category: 'geopolitics',
+    polymarketUrl: '/event/khamenei-out-as-supreme-leader-of-iran-by-february-28',
+    polymarketOdds: '19%',
+    polymarketVolume: '$4m',
+    source: 'polymarket',
+  },
+
+  // ECONOMY
+  {
+    id: 'fed-march-decision',
+    question: 'Fed decision in March 2026?',
     category: 'economy',
-    resolutionDate: '2025-12-31',
-    source: 'original',
-  },
-  
-  // Tech
-  {
-    id: 'apple-ai-device',
-    question: 'Will Apple release a dedicated AI hardware device in 2025?',
-    category: 'tech',
-    description: 'New product category focused on AI (not just iPhone/Mac updates).',
-    resolutionDate: '2025-12-31',
-    source: 'original',
+    polymarketUrl: '/event/fed-decision-in-march-885',
+    polymarketOdds: '25 bps decrease: 8%',
+    polymarketVolume: '$30m',
+    source: 'polymarket',
   },
   {
-    id: 'tesla-fsd-approved',
-    question: 'Will Tesla Full Self-Driving get regulatory approval in 2025?',
-    category: 'tech',
-    description: 'NHTSA or equivalent approval for unsupervised FSD in at least one US state.',
-    resolutionDate: '2025-12-31',
-    source: 'original',
+    id: 'gold-february',
+    question: 'What will Gold hit by end of February?',
+    category: 'economy',
+    polymarketUrl: '/event/what-will-gold-gc-hit-by-end-of-february',
+    polymarketOdds: '$5,500: 41%, $5,800: 25%',
+    polymarketVolume: '$1m',
+    source: 'polymarket',
   },
-  
-  // Culture / Fun
   {
-    id: 'ai-wins-oscar',
-    question: 'Will an AI-generated film win an Oscar by 2030?',
-    category: 'culture',
-    description: 'Film with majority AI-generated content wins Academy Award.',
-    resolutionDate: '2030-12-31',
-    source: 'original',
+    id: 'openai-ipo-cap',
+    question: 'OpenAI IPO Closing Market Cap?',
+    category: 'economy',
+    polymarketUrl: '/event/openai-ipo-closing-market-cap',
+    polymarketOdds: '750B-1T: 10%, 1T-1.25T: 11%',
+    polymarketVolume: '$1m',
+    source: 'polymarket',
+  },
+
+  // SPORTS
+  {
+    id: 'super-bowl-2026',
+    question: 'Super Bowl 2026: Seahawks vs Patriots',
+    category: 'sports',
+    polymarketUrl: '/event/nfl-sea-ne-2026-02-08',
+    polymarketOdds: 'Seahawks: 69%, Patriots: 32%',
+    polymarketVolume: '$6m',
+    source: 'polymarket',
+    featured: true,
+  },
+  {
+    id: 'giannis-trade',
+    question: 'Where will Giannis be traded?',
+    category: 'sports',
+    polymarketUrl: '/event/where-will-giannis-be-traded',
+    polymarketOdds: 'Not Traded: 49%, Warriors: 21%',
+    polymarketVolume: '$896k',
+    source: 'polymarket',
+  },
+
+  // ENTERTAINMENT
+  {
+    id: 'oscars-best-picture',
+    question: 'Oscars 2026: Best Picture Winner',
+    category: 'entertainment',
+    polymarketUrl: '/event/oscars-2026-best-picture-winner',
+    polymarketOdds: 'One Battle After Another: 69%, Sinners: 21%',
+    polymarketVolume: '$11m',
+    source: 'polymarket',
+  },
+  {
+    id: 'grammys-song-of-year',
+    question: 'Grammys: Song of the Year Winner',
+    category: 'entertainment',
+    polymarketUrl: '/event/grammys-song-of-the-year-winner',
+    polymarketOdds: 'Golden: 77%, luther: 10%',
+    polymarketVolume: '$1m',
+    source: 'polymarket',
   },
 ];
 
-// Helper to sort by engagement
-export function sortByEngagement(markets: Market[]): Market[] {
-  return [...markets].sort((a, b) => {
-    const engA = (a.engagement || 0) + (a.agentCount || 0) * 10;
-    const engB = (b.engagement || 0) + (b.agentCount || 0) * 10;
-    return engB - engA;
-  });
-}
-
-// Helper to get featured markets
-export function getFeaturedMarkets(markets: Market[]): Market[] {
+// Helper functions
+export function getFeaturedMarkets(): Market[] {
   return markets.filter(m => m.featured);
 }
 
-// Helper to filter by category
-export function filterByCategory(markets: Market[], category: string): Market[] {
+export function filterByCategory(category: string): Market[] {
   if (category === 'all') return markets;
   return markets.filter(m => m.category === category);
+}
+
+export function sortByVolume(marketList: Market[]): Market[] {
+  return [...marketList].sort((a, b) => {
+    const volA = parseVolume(a.polymarketVolume || '0');
+    const volB = parseVolume(b.polymarketVolume || '0');
+    return volB - volA;
+  });
+}
+
+function parseVolume(vol: string): number {
+  const num = parseFloat(vol.replace(/[$,]/g, ''));
+  if (vol.includes('m')) return num * 1000000;
+  if (vol.includes('k')) return num * 1000;
+  return num;
 }
