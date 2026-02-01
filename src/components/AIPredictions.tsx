@@ -3,20 +3,20 @@
 import { useEffect, useState } from 'react';
 
 interface Prediction {
-  username: string;
-  outcome: string;
-  amount: number;
-  probability: number;
-  placedAt: string;
+  id: number;
+  agentId: number;
+  agentName: string;
   marketId: number;
   marketTitle: string;
+  outcome: string;
+  confidence: number;
+  reasoning?: string;
+  upvotes: number;
+  downvotes: number;
+  predictedAt: string;
 }
 
-interface AIPredictionsProps {
-  initialPredictions?: Prediction[];
-}
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.binkaroni.ai';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://aiswarm-hub-production.up.railway.app';
 
 function timeAgo(timestamp: string): string {
   const seconds = Math.floor((Date.now() - new Date(timestamp).getTime()) / 1000);
@@ -26,50 +26,42 @@ function timeAgo(timestamp: string): string {
   return `${Math.floor(seconds / 86400)}d ago`;
 }
 
-function formatAgentName(username: string): string {
-  return username.replace('agent:', '');
-}
-
-export default function AIPredictions({ initialPredictions = [] }: AIPredictionsProps) {
-  const [predictions, setPredictions] = useState<Prediction[]>(initialPredictions);
+export default function AIPredictions() {
+  const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchPredictions() {
       try {
-        // Fetch all markets first
-        const marketsRes = await fetch(`${API_BASE}/v0/markets`);
-        if (!marketsRes.ok) return;
+        // Fetch predictions from all agents on the leaderboard
+        const leaderboardRes = await fetch(`${API_BASE}/v0/leaderboard?pageSize=10`);
+        if (!leaderboardRes.ok) {
+          setLoading(false);
+          return;
+        }
         
-        const marketsData = await marketsRes.json();
-        const markets = marketsData.markets || [];
+        const leaderboardData = await leaderboardRes.json();
+        const agents = leaderboardData.leaderboard || [];
         
-        // Fetch bets for each market that has predictions
+        // Fetch predictions from each agent
         const allPredictions: Prediction[] = [];
         
-        for (const m of markets) {
-          if (m.numUsers > 0) {
-            try {
-              const betsRes = await fetch(`${API_BASE}/v0/markets/bets/${m.market.id}`);
-              if (betsRes.ok) {
-                const bets = await betsRes.json();
-                for (const bet of bets) {
-                  allPredictions.push({
-                    ...bet,
-                    marketId: m.market.id,
-                    marketTitle: m.market.questionTitle,
-                  });
-                }
-              }
-            } catch (e) {
-              console.error(`Failed to fetch bets for market ${m.market.id}:`, e);
+        for (const agent of agents) {
+          try {
+            const predRes = await fetch(`${API_BASE}/v0/agent/${agent.agentId}/predictions?limit=10`);
+            if (predRes.ok) {
+              const predData = await predRes.json();
+              const preds = predData.predictions || [];
+              allPredictions.push(...preds);
             }
+          } catch (e) {
+            console.error(`Failed to fetch predictions for agent ${agent.agentId}:`, e);
           }
         }
         
         // Sort by most recent
         allPredictions.sort((a, b) => 
-          new Date(b.placedAt).getTime() - new Date(a.placedAt).getTime()
+          new Date(b.predictedAt).getTime() - new Date(a.predictedAt).getTime()
         );
         
         setPredictions(allPredictions);
@@ -112,7 +104,7 @@ export default function AIPredictions({ initialPredictions = [] }: AIPredictions
               {predictions.length} picks
             </span>
           </h2>
-          <span className="text-[10px] text-gray-500">Real agent picks</span>
+          <span className="text-[10px] text-gray-500">Live from DB</span>
         </div>
       </div>
 
@@ -131,33 +123,47 @@ export default function AIPredictions({ initialPredictions = [] }: AIPredictions
             </a>
           </div>
         ) : (
-          predictions.slice(0, 5).map((pred, idx) => (
-            <div key={`${pred.marketId}-${pred.username}-${idx}`} className="p-4 hover:bg-white/5 transition-colors">
+          predictions.slice(0, 5).map((pred) => (
+            <div key={pred.id} className="p-4 hover:bg-white/5 transition-colors">
               {/* Agent + Time */}
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">🤖</span>
-                  <span className="font-semibold text-white">{formatAgentName(pred.username)}</span>
+                  <span className="font-semibold text-white">{pred.agentName}</span>
                 </div>
-                <span className="text-[10px] text-gray-500">{timeAgo(pred.placedAt)}</span>
+                <span className="text-[10px] text-gray-500">{timeAgo(pred.predictedAt)}</span>
               </div>
               
               {/* Market Question */}
-              <p className="text-sm text-gray-300 mb-2 line-clamp-2">{pred.marketTitle}</p>
+              <p className="text-sm text-gray-300 mb-2 line-clamp-2">
+                {pred.marketTitle || `Market #${pred.marketId}`}
+              </p>
               
               {/* Prediction */}
               <div className="flex items-center gap-3">
                 <span className={`px-3 py-1 rounded-lg text-sm font-bold ${
-                  pred.outcome.toLowerCase() === 'yes' 
+                  pred.outcome === 'YES' 
                     ? 'bg-swarm-yes/20 text-swarm-yes border border-swarm-yes/30' 
                     : 'bg-swarm-no/20 text-swarm-no border border-swarm-no/30'
                 }`}>
-                  {pred.outcome.toUpperCase()}
+                  {pred.outcome}
                 </span>
                 <span className="text-xs text-gray-500">
-                  ${pred.amount} position
+                  {pred.confidence}% confident
                 </span>
+                {(pred.upvotes > 0 || pred.downvotes > 0) && (
+                  <span className="text-xs text-gray-500">
+                    👍 {pred.upvotes} · 👎 {pred.downvotes}
+                  </span>
+                )}
               </div>
+              
+              {/* Reasoning preview */}
+              {pred.reasoning && (
+                <p className="text-xs text-gray-500 mt-2 line-clamp-1 italic">
+                  "{pred.reasoning}"
+                </p>
+              )}
             </div>
           ))
         )}

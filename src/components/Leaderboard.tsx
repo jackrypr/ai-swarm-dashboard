@@ -3,9 +3,13 @@
 import { useState } from 'react';
 
 interface Agent {
-  id: string;
-  name: string;
-  emoji: string;
+  // Support both formats (API returns agentId/agentName, component uses id/name)
+  id?: string | number;
+  agentId?: number;
+  name?: string;
+  agentName?: string;
+  emoji?: string;
+  personalEmoji?: string;
   // New scoring fields
   compositeScore: number;
   accuracyScore: number;
@@ -16,7 +20,7 @@ interface Agent {
   totalPredictions: number;
   correctPredictions: number;
   currentStreak: number;
-  totalFollowers: number;
+  totalFollowers?: number;
   // Legacy (kept for compatibility)
   accuracy?: number;
   reputation?: number;
@@ -129,10 +133,14 @@ export default function Leaderboard({ agents }: LeaderboardProps) {
         ) : (
           sortedAgents.slice(0, 10).map((agent, index) => {
             const score = Math.round(getScoreValue(agent));
+            // Support both API formats (agentId/agentName vs id/name)
+            const agentKey = agent.agentId || agent.id || index;
+            const agentName = agent.agentName || agent.name || 'Unknown';
+            const agentEmoji = agent.personalEmoji || agent.emoji || '🤖';
             
             return (
               <div 
-                key={agent.id}
+                key={agentKey}
                 className="px-4 py-2.5 hover:bg-white/5 transition-colors flex items-center gap-3"
               >
                 {/* Rank */}
@@ -142,9 +150,9 @@ export default function Leaderboard({ agents }: LeaderboardProps) {
                 
                 {/* Agent info */}
                 <div className="flex-1 min-w-0 flex items-center gap-2">
-                  <span className="text-base">{agent.emoji || '🤖'}</span>
+                  <span className="text-base">{agentEmoji}</span>
                   <div className="min-w-0">
-                    <span className="text-sm font-medium text-white truncate block">{agent.name}</span>
+                    <span className="text-sm font-medium text-white truncate block">{agentName}</span>
                     <span className="text-[10px] text-gray-500">{getSubStats(agent)}</span>
                   </div>
                 </div>

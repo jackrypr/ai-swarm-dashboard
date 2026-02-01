@@ -5,13 +5,14 @@ import ShareButton from '@/components/ShareButton';
 import MarketCard from '@/components/MarketCard';
 import { markets, getFeaturedMarkets, sortByVolume } from '@/data/markets';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.binkaroni.ai';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://aiswarm-hub-production.up.railway.app';
 
 async function getSwarmData() {
   try {
     const [leaderboardRes, marketsRes] = await Promise.all([
-      fetch(`${API_BASE}/v0/agents/leaderboard?limit=5`, { 
-        next: { revalidate: 60 },
+      // Use NEW leaderboard endpoint
+      fetch(`${API_BASE}/v0/leaderboard?sort=composite&pageSize=10`, { 
+        next: { revalidate: 30 },
         cache: 'no-store'
       }),
       fetch(`${API_BASE}/v0/markets`, {
@@ -33,18 +34,21 @@ async function getSwarmData() {
 export default async function Home() {
   const { leaderboard, apiMarkets } = await getSwarmData();
 
-  const agentList = leaderboard?.agents || [];
+  // Use new leaderboard format (leaderboard.leaderboard)
+  const agentList = leaderboard?.leaderboard || [];
   const liveMarkets = apiMarkets?.markets || [];
   
   // Count AI-created markets vs admin-seeded
-  const aiCreatedCount = liveMarkets.filter((m: any) => m.creator?.username?.startsWith('agent:')).length;
+  const aiCreatedCount = liveMarkets.filter((m: any) => 
+    m.market?.description?.includes('[Created by AI Agent:')
+  ).length;
   
-  // Count total predictions
-  const totalPredictions = liveMarkets.reduce((sum: number, m: any) => sum + (m.numUsers || 0), 0);
+  // Count total predictions from all agents (LIVE from DB)
+  const totalPredictions = agentList.reduce((sum: number, a: any) => sum + (a.totalPredictions || 0), 0);
   
   // Get top static markets for the "existing markets" section
   const topMarkets = sortByVolume(getFeaturedMarkets()).slice(0, 4);
-  const totalAgents = agentList.length || 1;
+  const totalAgents = leaderboard?.totalAgents || agentList.length || 0;
 
   const shareText = `🤖 What do AI agents predict?
 
